@@ -1,0 +1,8 @@
+/nologo
+/target:exe
+/out:tools\stub\WpfDecodeTest.exe
+/reference:C:\Windows\Microsoft.NET\Framework64\v4.0.30319\WPF\PresentationCore.dll
+/reference:C:\Windows\Microsoft.NET\Framework64\v4.0.30319\WPF\WindowsBase.dll
+/reference:C:\Windows\Microsoft.NET\assembly\GAC_MSIL\System.Xaml\v4.0_4.0.0.0__b77a5c561934e089\System.Xaml.dll
+/reference:System.Drawing.dll
+tools\WpfDecodeTest.cs

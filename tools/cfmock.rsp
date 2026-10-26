@@ -1,0 +1,14 @@
+/nologo
+/target:exe
+/out:tools\CfMock.exe
+/codepage:65001
+/reference:System.dll
+/reference:System.Core.dll
+/reference:System.Net.Http.dll
+src\Core\AppPaths.cs
+src\Core\CurseForge.cs
+src\Core\Json.cs
+src\Core\ModIndexStore.cs
+src\Core\ModModels.cs
+src\Core\Web.cs
+tools\CfMock.cs

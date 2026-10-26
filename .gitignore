@@ -1,0 +1,9 @@
+# Build output
+dist/
+*.exe
+*.pdb
+*.dll
+
+# Local logs and test screenshots
+*.log
+test_*.png
