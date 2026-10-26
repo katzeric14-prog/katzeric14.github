@@ -67,6 +67,9 @@ namespace Vexor.Ui
         private Label _versionTitle;
         private Label _versionMeta;
         private Label _status;
+        private ToggleSwitch _visualToggle;
+        private Label _visualLabel;
+        private bool _visualSyncing;
         private Label _fabricStatus;
         private Label _forgeStatus;
         private RoundedButton _fabricAction;
@@ -712,7 +715,23 @@ namespace Vexor.Ui
             versions.Controls.Add(_versionList);
 
             var launch = AddCard(_playPage, 524, 78, 332, 378);
-            AddLabel(launch, "ЗАПУСК", 20, 12, 200, 18, Theme.F(9.5f, FontStyle.Bold), Theme.Muted2);
+            AddLabel(launch, "ЗАПУСК", 20, 12, 110, 18, Theme.F(9.5f, FontStyle.Bold), Theme.Muted2);
+
+            _visualLabel = AddLabel(launch, "ВИЗУАЛ", 150, 8, 104, 18, Theme.F(9.5f, FontStyle.Bold), Theme.Muted2);
+            _visualLabel.TextAlign = ContentAlignment.MiddleRight;
+            _visualToggle = new ToggleSwitch();
+            _visualToggle.Bounds = new Rectangle(Theme.S(264), Theme.S(4), Theme.S(44), Theme.S(24));
+            _visualToggle.Checked = _settings.VisualEnabled;
+            _visualToggle.CheckedChanged += VisualToggled;
+            launch.Controls.Add(_visualToggle);
+            UpdateVisualUi();
+
+            var visualTip = new ToolTip();
+            visualTip.SetToolTip(_visualToggle, "Vexor Visual — ESP, HUD и косметика (Fabric " +
+                VisualMod.SupportedGameVersion + ")");
+            visualTip.SetToolTip(_visualLabel, "Vexor Visual — ESP, HUD и косметика (Fabric " +
+                VisualMod.SupportedGameVersion + ")");
+
             _versionTitle = AddLabel(launch, "—", 20, 30, 292, 36, Theme.Display(24f, FontStyle.Bold), Theme.Text);
             _versionMeta = AddLabel(launch, "Загрузка списка версий…", 20, 68, 292, 18, Theme.F(10.5f), Theme.Muted);
             AddDivider(launch, 20, 96, 292);
@@ -2301,6 +2320,8 @@ namespace Vexor.Ui
             string url = settings != null ? (settings.UpdateManifestUrl ?? "").Trim() : "";
             if (url.Length == 0)
                 url = (Environment.GetEnvironmentVariable("VEXOR_UPDATE_URL") ?? "").Trim();
+            if (url.Length == 0)
+                url = (UpdateDefaults.ManifestUrl ?? "").Trim();
             return url;
         }
 
@@ -4462,6 +4483,49 @@ namespace Vexor.Ui
             return result;
         }
 
+        private void UpdateVisualUi()
+        {
+            if (_visualLabel == null) return;
+            _visualLabel.ForeColor = _settings.VisualEnabled ? Theme.AccentLight : Theme.Muted2;
+        }
+
+        private async void VisualToggled(object sender, EventArgs e)
+        {
+            if (_visualSyncing) return;
+            _settings.VisualEnabled = _visualToggle.Checked;
+            _settings.Save();
+            UpdateVisualUi();
+
+            _visualSyncing = true;
+            try
+            {
+                SetStatus(_settings.VisualEnabled ? "Включаю визуал…" : "Выключаю визуал…", Theme.Muted);
+                bool active = await VisualMod.SyncAsync(_builds, _settings.VisualEnabled, Log, CancellationToken.None);
+                if (!_settings.VisualEnabled)
+                {
+                    SetStatus("Визуал выключен — мод не будет загружаться.", Theme.Muted);
+                }
+                else if (active)
+                {
+                    SetStatus("Визуал включён · Fabric " + VisualMod.SupportedGameVersion +
+                        " · RSHIFT в игре", Theme.Green);
+                }
+                else
+                {
+                    SetStatus("Визуал: нужна Fabric-сборка " + VisualMod.SupportedGameVersion + ".", Theme.Yellow);
+                }
+            }
+            catch (Exception ex)
+            {
+                Log("Визуал: " + ex.Message, Theme.Red);
+                SetStatus("Визуал: " + ShortMessage(ex), Theme.Red);
+            }
+            finally
+            {
+                _visualSyncing = false;
+            }
+        }
+
         private async void PlayClicked(object sender, EventArgs e)
         {
             if (_busy)
@@ -4510,22 +4574,48 @@ namespace Vexor.Ui
 
             string gameDir = _settings.GameDir;
             InstalledBuild build = LoaderInstaller.Find(_builds, entry.Id);
+            VersionEntry launchEntry = entry;
             string launchGameDir = gameDir;
-            if (build != null)
-            {
-                LoaderInstaller.PrepareProfile(build);
-                launchGameDir = build.ProfileDir;
-                Log("Сборка: " + build.Summary + " · mods: " + build.ModsDir);
-            }
+            bool autoFabric = false;
 
             try
             {
-                GameVersion version = await MojangApi.EnsureVersionJsonAsync(entry, gameDir, Log, _cts.Token);
+                GameVersion version = await MojangApi.EnsureVersionJsonAsync(launchEntry, gameDir, Log, _cts.Token);
                 Log("Версия " + version.Id + " · требуется Java " + version.JavaMajor);
 
                 IProgress<BatchProgress> progress = CreateProgress();
                 string javaPath = await JavaManager.EnsureJavaAsync(version.JavaMajor, _settings, progress, Log,
                     _cts.Token);
+                _cts.Token.ThrowIfCancellationRequested();
+
+                if (_settings.VisualEnabled && build == null && VisualMod.SupportsGameVersion(version.Id))
+                {
+                    build = FindBuild(LoaderInstaller.Fabric, version.Id);
+                    if (build == null)
+                    {
+                        SetStatus("Готовлю Fabric для визуала…", Theme.Muted);
+                        Log("Визуал: устанавливаю Fabric для " + version.Id + "…");
+                        build = await LoaderInstaller.EnsureFabricAsync(version.Id, gameDir, null, progress, Log,
+                            _cts.Token);
+                        _builds.Add(build);
+                    }
+                    autoFabric = true;
+                    launchEntry = new VersionEntry();
+                    launchEntry.Id = build.Id;
+                    launchEntry.Type = build.Loader;
+                    launchEntry.ReleaseTime = build.CreatedTime;
+                    version = await MojangApi.EnsureVersionJsonAsync(launchEntry, gameDir, Log, _cts.Token);
+                }
+
+                if (build != null)
+                {
+                    LoaderInstaller.PrepareProfile(build);
+                    launchGameDir = build.ProfileDir;
+                    Log("Сборка: " + build.Summary + " · mods: " + build.ModsDir);
+                    if (autoFabric) Log("Визуал: запуск через " + build.Summary + ".");
+                }
+
+                await VisualMod.SyncAsync(_builds, _settings.VisualEnabled, Log, _cts.Token);
                 _cts.Token.ThrowIfCancellationRequested();
 
                 var features = new FeatureSet();
@@ -4545,7 +4635,7 @@ namespace Vexor.Ui
                     ? "Запускаю Minecraft…"
                     : "Подключаюсь к " + connectHost + "…", Theme.Muted);
 
-                int exitCode = await GameLauncher.LaunchAsync(version, entry, install, _settings, account, javaPath,
+                int exitCode = await GameLauncher.LaunchAsync(version, launchEntry, install, _settings, account, javaPath,
                     launchGameDir, features, Log,
                     delegate { SetGameRunning(true, version.Id, version.JavaMajor); },
                     CancellationToken.None, connectHost, connectPort);

@@ -410,7 +410,7 @@ namespace Vexor.Core
                                              System.Net.DecompressionMethods.Deflate;
             var client = new HttpClient(handler);
             client.Timeout = TimeSpan.FromSeconds(45);
-            client.DefaultRequestHeaders.UserAgent.ParseAdd("VexorLauncher/0.1.0");
+            client.DefaultRequestHeaders.UserAgent.ParseAdd("VexorLauncher/" + AppInfo.Version);
             return client;
         }
     }

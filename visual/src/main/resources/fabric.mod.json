@@ -1,0 +1,29 @@
+{
+	"schemaVersion": 1,
+	"id": "vexorvisual",
+	"version": "${version}",
+	"name": "Vexor Visual",
+	"description": "Визуальный клиент: ESP, HUD, камера, косметика.",
+	"authors": [
+		"Vexor"
+	],
+	"license": "MIT",
+	"environment": "client",
+	"entrypoints": {
+		"client": [
+			"ru.vexor.visual.VexorVisual"
+		]
+	},
+	"mixins": [
+		{
+			"config": "vexorvisual.mixins.json",
+			"environment": "client"
+		}
+	],
+	"depends": {
+		"fabricloader": ">=0.16.0",
+		"minecraft": "~1.21.11",
+		"java": ">=21",
+		"fabric-api": "*"
+	}
+}

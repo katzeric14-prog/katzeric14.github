@@ -77,7 +77,7 @@ namespace Vexor.Core
             handler.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
             Client = new HttpClient(handler);
             Client.Timeout = TimeSpan.FromHours(3);
-            Client.DefaultRequestHeaders.UserAgent.ParseAdd("VexorLauncher/0.1.0");
+            Client.DefaultRequestHeaders.UserAgent.ParseAdd("VexorLauncher/" + AppInfo.Version);
         }
 
         // Некоторые сервисы Mojang согласуют только TLS 1.3, поэтому не ограничиваемся 1.2.

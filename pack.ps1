@@ -11,10 +11,14 @@
 
 .EXAMPLE
     powershell -NoProfile -ExecutionPolicy Bypass -File .\pack.ps1 -Run
+
+.EXAMPLE
+    powershell -NoProfile -ExecutionPolicy Bypass -File .\pack.ps1 -UpdateUrl "https://example.com/vexor/updates/manifest.json"
 #>
 [CmdletBinding()]
 param(
     [string]$Output = 'dist\VexorLauncher.exe',
+    [string]$UpdateUrl = '',
     [switch]$Run
 )
 
@@ -25,9 +29,14 @@ Push-Location $root
 
 $rspPath = $null
 $tempOut = $null
+$generatedSource = $null
 
 try
 {
+    if ($null -eq $UpdateUrl) { $UpdateUrl = '' }
+    $UpdateUrl = $UpdateUrl.Trim()
+    if ($UpdateUrl -and $UpdateUrl -notmatch '^https://') { throw 'Адрес обновлений должен начинаться с https://' }
+
     $framework = Join-Path $env:WINDIR 'Microsoft.NET\Framework64\v4.0.30319'
     if (-not (Test-Path (Join-Path $framework 'csc.exe')))
     {
@@ -57,6 +66,15 @@ try
         @{ File = 'assets\loader-forge.png'; Name = 'Vexor.Assets.loader-forge.png' }
     )
 
+    $visualJar = Get-ChildItem -Path 'visual\build\libs' -Filter 'vexor-visual-*.jar' -File -ErrorAction SilentlyContinue |
+        Where-Object { $_.Name -notlike '*-sources.jar' -and $_.Name -notlike '*-dev.jar' } |
+        Sort-Object LastWriteTime | Select-Object -Last 1
+    if (-not $visualJar)
+    {
+        throw 'Не найден JAR визуала. Соберите его: cd visual; .\gradlew.bat build'
+    }
+    $resources += @{ File = $visualJar.FullName.Substring($root.Length + 1); Name = 'Vexor.Visual.jar' }
+
     $references = @(
         'System.dll',
         'System.Core.dll',
@@ -85,6 +103,33 @@ try
     if ($outDir -and -not (Test-Path $outDir))
     {
         New-Item -ItemType Directory -Path $outDir | Out-Null
+    }
+    if ($UpdateUrl)
+    {
+        $generatedDir = if ($outDir) { $outDir } else { '.' }
+        $generatedSource = Join-Path $generatedDir 'UpdateDefaults.g.cs'
+        $escapedUrl = $UpdateUrl.Replace('\', '\\').Replace('"', '\"')
+        $lines = @(
+            'namespace Vexor.Core',
+            '{',
+            '    public static class UpdateDefaults',
+            '    {',
+            ('        public const string ManifestUrl = "' + $escapedUrl + '";'),
+            '    }',
+            '}'
+        )
+        [IO.File]::WriteAllLines($generatedSource, $lines, (New-Object System.Text.UTF8Encoding($false)))
+        $generatedFull = [IO.Path]::GetFullPath($generatedSource)
+        if ($generatedFull.StartsWith($root + '\', [StringComparison]::OrdinalIgnoreCase))
+        {
+            $sources = @($sources | Where-Object { $_ -ne 'src\Core\UpdateDefaults.cs' })
+            $sources += $generatedFull.Substring($root.Length + 1)
+        }
+        else
+        {
+            $sources = @($sources | Where-Object { $_ -ne 'src\Core\UpdateDefaults.cs' })
+            $sources += $generatedFull
+        }
     }
     $tempOut = Join-Path $outDir ([IO.Path]::GetFileNameWithoutExtension($Output) + '.new.exe')
     if (Test-Path $tempOut) { Remove-Item $tempOut -Force }
@@ -116,7 +161,9 @@ try
 
     Write-Host 'Сборка Vexor Launcher'
     Write-Host ('  исходники: ' + $sources.Count)
-    Write-Host ('  ресурсы:   ' + $resources.Count + ' PNG + иконка + манифест')
+    Write-Host ('  ресурсы:   ' + $resources.Count + ' файла (PNG, иконка, манифест, визуал)')
+    Write-Host ('  визуал:    ' + $visualJar.Name)
+    Write-Host ('  обновления: ' + $(if ($UpdateUrl) { $UpdateUrl } else { 'адрес не задан' }))
     Write-Host ('  компилятор: ' + $csc)
     Write-Host ''
 
@@ -151,5 +198,6 @@ finally
 {
     if ($rspPath -and (Test-Path -LiteralPath $rspPath)) { Remove-Item -LiteralPath $rspPath -Force -ErrorAction SilentlyContinue }
     if ($tempOut -and (Test-Path -LiteralPath $tempOut)) { Remove-Item -LiteralPath $tempOut -Force -ErrorAction SilentlyContinue }
+    if ($generatedSource -and (Test-Path -LiteralPath $generatedSource)) { Remove-Item -LiteralPath $generatedSource -Force -ErrorAction SilentlyContinue }
     Pop-Location
 }

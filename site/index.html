@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Vexor Launcher — Minecraft без лишней возни</title>
+  <meta name="description" content="Vexor Launcher — бесплатный лаунчер Minecraft для Windows: все версии, Fabric и Forge, моды, модпаки, ресурспаки, шейдеры, серверы и диагностика сборки в одном приложении.">
+  <meta name="theme-color" content="#07080d">
+  <meta property="og:title" content="Vexor Launcher — Minecraft без лишней возни">
+  <meta property="og:description" content="Все версии, загрузчики, моды и сборки в одном лаунчере. Офлайн и Microsoft-аккаунты, автоматическая Java и диагностика перед запуском.">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="assets/vexor.ico">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body id="top">
+  <div class="background" aria-hidden="true"></div>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="#top" aria-label="Vexor Launcher — на главную">
+        <span class="brand-mark" aria-hidden="true">V</span>
+        <span class="brand-text">
+          <strong>VEXOR</strong>
+          <small>LAUNCHER</small>
+        </span>
+      </a>
+
+      <nav class="nav" aria-label="Основная навигация">
+        <a href="#features">Возможности</a>
+        <a href="#interface">Интерфейс</a>
+        <a href="#requirements">Требования</a>
+        <a href="#faq">Вопросы</a>
+      </nav>
+
+      <a class="button button--primary button--small" href="downloads/VexorLauncher-Setup-0.1.4.exe" download>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/>
+        </svg>
+        Скачать
+      </a>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="container hero__inner">
+        <div class="hero__copy">
+          <span class="eyebrow"><span class="eyebrow__dot" aria-hidden="true"></span> Версия 0.1.4 · Windows 10/11</span>
+          <h1>Minecraft<br><span class="text-gradient">без лишней возни</span></h1>
+          <p class="hero__lead">Все версии, Fabric и Forge, моды, модпаки, ресурспаки, шейдеры и серверы — в одном лаунчере. Офлайн-ник или Microsoft-аккаунт, автоматическая Java и проверка сборки перед запуском.</p>
+
+          <div class="hero__actions">
+            <a class="button button--primary button--lg" href="downloads/VexorLauncher-Setup-0.1.4.exe" download>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/>
+              </svg>
+              <span class="button__stack">
+                <strong>Скачать установщик</strong>
+                <small>2,71 МБ · .exe</small>
+              </span>
+            </a>
+            <a class="button button--ghost button--lg" href="#features">
+              Что внутри
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M12 5v14"/><path d="m6 13 6 6 6-6"/>
+              </svg>
+            </a>
+          </div>
+
+          <ul class="hero__meta">
+            <li>Офлайн и Microsoft</li>
+            <li>Fabric и Forge</li>
+            <li>Без подписок</li>
+          </ul>
+        </div>
+
+        <div class="hero__visual" aria-hidden="true">
+          <div class="launcher">
+            <div class="launcher__bar">
+              <span class="launcher__dots"><i></i><i></i><i></i></span>
+              <span class="launcher__title">Vexor Launcher</span>
+              <span class="launcher__controls">— □ ×</span>
+            </div>
+
+            <div class="launcher__body">
+              <aside class="mock-side">
+                <div class="mock-brand">
+                  <span>V</span>
+                  <b>VEXOR</b>
+                  <small>LAUNCHER</small>
+                </div>
+
+                <div class="mock-label">МЕНЮ</div>
+                <ul class="mock-nav">
+                  <li class="is-active"><i>▶</i>Играть</li>
+                  <li><i>◆</i>Моды</li>
+                  <li><i>▣</i>Модпаки</li>
+                  <li><i>▤</i>Ресурспаки</li>
+                  <li><i>◉</i>Шейдеры</li>
+                  <li><i>◎</i>Серверы</li>
+                  <li><i>☺</i>Скины</li>
+                </ul>
+
+                <div class="mock-account">
+                  <b><i></i>Player</b>
+                  <span>Офлайн-аккаунт</span>
+                  <span>16 ГБ ОЗУ · Windows 11</span>
+                </div>
+              </aside>
+
+              <div class="mock-main">
+                <div class="mock-heading">
+                  <div>
+                    <h2>Играть</h2>
+                    <p>Любая версия Minecraft — от альфы до последнего релиза</p>
+                  </div>
+                  <div class="mock-chips">
+                    <span class="is-active">Все</span>
+                    <span>Релизы</span>
+                    <span>Снапшоты</span>
+                  </div>
+                </div>
+
+                <div class="mock-grid">
+                  <div class="mock-list">
+                    <div class="mock-search">Поиск версий…</div>
+                    <div class="mock-version is-selected">
+                      <div><b>Fabulously Optimized</b><small>Модпак · Fabric · 1.21.11</small></div>
+                      <span class="mock-check">✓</span>
+                    </div>
+                    <div class="mock-version">
+                      <div><b>fabric-loader-0.20.1-1.21.11</b><small>Fabric · 26.10.2026</small></div>
+                    </div>
+                    <div class="mock-version">
+                      <div><b>1.21.11-forge-61.2.4</b><small>Forge · 26.10.2026</small></div>
+                    </div>
+                    <div class="mock-version">
+                      <div><b>1.21.8</b><small>Официальный релиз · 26.10.2026</small></div>
+                    </div>
+                  </div>
+
+                  <div class="mock-play">
+                    <small>ЗАПУСК</small>
+                    <h3>Fabulously Optimized</h3>
+                    <p>Модпак · Fabric · 26.10.2026</p>
+                    <label>НИКНЕЙМ</label>
+                    <div class="mock-input">Player</div>
+                    <div class="mock-play-button">▶ ИГРАТЬ</div>
+                    <div class="mock-status"><i></i>Готов к запуску</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="stats-band" aria-label="Vexor Launcher в цифрах">
+      <div class="container stats">
+        <div><strong>Fabric + Forge</strong><span>два загрузчика</span></div>
+        <div><strong>Modrinth + CurseForge</strong><span>каталоги модов</span></div>
+        <div><strong>1 установщик</strong><span>всё в одном exe</span></div>
+        <div><strong>0 ₽</strong><span>без подписок</span></div>
+      </div>
+    </section>
+
+    <section class="section" id="features">
+      <div class="container">
+        <div class="section-head">
+          <span class="section-kicker">Возможности</span>
+          <h2>Всё, что нужно для игры</h2>
+          <p>Vexor берёт на себя версии, Java, загрузчики и каталоги модов — вам остаётся выбрать сборку и нажать «Играть».</p>
+        </div>
+
+        <div class="features">
+          <article class="feature">
+            <div class="feature__icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="m12 3 9 5-9 5-9-5 9-5Z"/><path d="m3 12 9 5 9-5"/><path d="m3 16 9 5 9-5"/>
+              </svg>
+            </div>
+            <h3>Все версии Minecraft</h3>
+            <p>Релизы, снапшоты и старые версии в одном списке. Лаунчер сам скачает игру, библиотеки и подходящую Java.</p>
+          </article>
+
+          <article class="feature feature--green">
+            <div class="feature__icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="m21 8-9-5-9 5 9 5 9-5Z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/>
+              </svg>
+            </div>
+            <h3>Fabric и Forge</h3>
+            <p>Установка загрузчика в пару кликов. У каждой сборки свой профиль и отдельная папка <code>mods</code>.</p>
+          </article>
+
+          <article class="feature">
+            <div class="feature__icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>
+              </svg>
+            </div>
+            <h3>Каталог модов</h3>
+            <p>Поиск по Modrinth и CurseForge с фильтрами по версии и загрузчику. Установка прямо в выбранную сборку.</p>
+          </article>
+
+          <article class="feature feature--cyan">
+            <div class="feature__icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M4 7.5 12 3l8 4.5v9L12 21l-8-4.5v-9Z"/><path d="M4 7.5 12 12l8-4.5"/><path d="M12 12v9"/>
+              </svg>
+            </div>
+            <h3>Модпаки</h3>
+            <p>Готовые сборки с модами и конфигами. Выберите понравившуюся версию — и играйте без ручной сборки.</p>
+          </article>
+
+          <article class="feature feature--cyan">
+            <div class="feature__icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9" r="1.5"/><path d="m21 15-5-5L5 20"/>
+              </svg>
+            </div>
+            <h3>Ресурспаки и шейдеры</h3>
+            <p>Текстуры и шейдеры для Iris и OptiFine. Каталог подбирает файл под вашу версию Minecraft.</p>
+          </article>
+
+          <article class="feature feature--green">
+            <div class="feature__icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M3 12h4l2-6 4 12 2-6h6"/>
+              </svg>
+            </div>
+            <h3>Диагностика</h3>
+            <p>Проверка дубликатов, зависимостей и конфликтов модов. Отдельная оценка: хватит ли оперативной памяти.</p>
+          </article>
+
+          <article class="feature">
+            <div class="feature__icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/>
+              </svg>
+            </div>
+            <h3>Аккаунты и скины</h3>
+            <p>Вход через Microsoft или игра под офлайн-ником. Скин можно рассмотреть и сменить прямо в лаунчере.</p>
+          </article>
+
+          <article class="feature">
+            <div class="feature__icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="3" y="4" width="18" height="6" rx="2"/><rect x="3" y="14" width="18" height="6" rx="2"/><path d="M7 7h.01M7 17h.01"/>
+              </svg>
+            </div>
+            <h3>Серверы</h3>
+            <p>Каталог популярных серверов с живым пингом и подключением в один клик — без ручного ввода адреса.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section--tight" id="interface">
+      <div class="container">
+        <div class="section-head">
+          <span class="section-kicker">Интерфейс</span>
+          <h2>Понятно с первого запуска</h2>
+          <p>Тёмная тема, крупные кнопки и всё важное на виду. Вот как выглядят ключевые экраны лаунчера.</p>
+        </div>
+
+        <div class="interface-grid">
+          <article class="ui-card">
+            <div class="mini-window">
+              <div class="mini-window__bar">
+                <span class="mini-dots"><i></i><i></i><i></i></span>
+                <span>Диагностика</span>
+              </div>
+              <div class="mini-window__body">
+                <div class="diag-head">
+                  <div><small>СБОРКА</small><strong>Fabulously Optimized</strong></div>
+                  <span class="badge badge--green">Можно играть</span>
+                </div>
+                <div class="diag-row"><span>Оперативная память</span><b>4,5 ГБ из 16 ГБ</b></div>
+                <div class="meter"><span style="width:28%"></span><i style="left:25%"></i></div>
+                <div class="diag-note">Рекомендуется 4 ГБ · 48 модов · свободно 3,6 ГБ</div>
+                <ul class="check-list">
+                  <li>Дубликаты и конфликты</li>
+                  <li>Зависимости модов</li>
+                  <li>Версия Minecraft и загрузчик</li>
+                </ul>
+              </div>
+            </div>
+            <p class="ui-card__caption">Диагностика объясняет, что мешает запуску, до первого краша.</p>
+          </article>
+
+          <article class="ui-card">
+            <div class="mini-window">
+              <div class="mini-window__bar">
+                <span class="mini-dots"><i></i><i></i><i></i></span>
+                <span>Каталог модов</span>
+              </div>
+              <div class="mini-window__body">
+                <div class="catalog-search"><span>Поиск: sodium</span><span>Fabric · 1.21.11</span></div>
+                <div class="catalog-row">
+                  <span class="catalog-icon">S</span>
+                  <span class="catalog-info"><b>Sodium</b><small>0.8.14 · Fabric · 1.21.11</small></span>
+                  <span class="catalog-action">Установить</span>
+                </div>
+                <div class="catalog-row">
+                  <span class="catalog-icon">I</span>
+                  <span class="catalog-info"><b>Iris Shaders</b><small>1.10.8 · Fabric · 1.21.11</small></span>
+                  <span class="catalog-action">Установить</span>
+                </div>
+                <div class="catalog-row">
+                  <span class="catalog-icon">F</span>
+                  <span class="catalog-info"><b>Fabric API</b><small>0.141.6 · Fabric · 1.21.11</small></span>
+                  <span class="catalog-action">Установить</span>
+                </div>
+              </div>
+            </div>
+            <p class="ui-card__caption">Каталог сразу отфильтрован под выбранную версию и загрузчик.</p>
+          </article>
+
+          <article class="ui-card">
+            <div class="mini-window">
+              <div class="mini-window__bar">
+                <span class="mini-dots"><i></i><i></i><i></i></span>
+                <span>Серверы</span>
+              </div>
+              <div class="mini-window__body">
+                <div class="server-row">
+                  <span class="server-avatar">H</span>
+                  <span class="server-info"><b>Hypixel</b><small>mc.hypixel.net</small></span>
+                  <span class="ping ping--good">42 ms</span>
+                </div>
+                <div class="server-row">
+                  <span class="server-avatar">M</span>
+                  <span class="server-info"><b>MineLand</b><small>mc.mine.land</small></span>
+                  <span class="ping ping--good">18 ms</span>
+                </div>
+                <div class="server-row">
+                  <span class="server-avatar">C</span>
+                  <span class="server-info"><b>CubeCraft</b><small>play.cubecraft.net</small></span>
+                  <span class="ping ping--mid">67 ms</span>
+                </div>
+                <div class="server-note"><span></span>Пинг обновляется автоматически</div>
+              </div>
+            </div>
+            <p class="ui-card__caption">Живой пинг показывает, на какой сервер стоит заходить.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="how">
+      <div class="container">
+        <div class="section-head">
+          <span class="section-kicker">Как это работает</span>
+          <h2>Три шага до игры</h2>
+        </div>
+
+        <div class="steps">
+          <article class="step">
+            <h3>Установите лаунчер</h3>
+            <p>Запустите установщик и выберите папку. Ярлыки появятся на рабочем столе и в меню «Пуск».</p>
+          </article>
+          <article class="step">
+            <h3>Выберите сборку</h3>
+            <p>Версия, Fabric или Forge. Лаунчер скачает игру, библиотеки и нужную версию Java автоматически.</p>
+          </article>
+          <article class="step">
+            <h3>Играйте</h3>
+            <p>Добавляйте моды, ресурспаки и шейдеры из каталога в пару кликов и запускайте игру.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="requirements">
+      <div class="container">
+        <div class="section-head">
+          <span class="section-kicker">Требования</span>
+          <h2>Что нужно для запуска</h2>
+          <p>Никаких ручных библиотек и отдельных установок Java — только Windows и интернет для первой загрузки.</p>
+        </div>
+
+        <div class="requirements">
+          <ul class="req-list">
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg>
+              <span><strong>Windows 10 или 11.</strong> 64-битная система рекомендуется для тяжёлых сборок.</span>
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg>
+              <span><strong>.NET Framework 4.x.</strong> Уже входит в Windows 10 и 11, отдельно ставить не нужно.</span>
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg>
+              <span><strong>4 ГБ ОЗУ минимум.</strong> Для сборок с модами и шейдерами лучше 8–16 ГБ.</span>
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg>
+              <span><strong>Интернет.</strong> Для скачивания игры, модов, ресурспаков, шейдеров и Java.</span>
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg>
+              <span><strong>Без прав администратора.</strong> Установка в папку пользователя, обновления применяются автоматически.</span>
+            </li>
+          </ul>
+
+          <aside class="installer-card">
+            <small>УСТАНОВЩИК</small>
+            <h3>Vexor Launcher 0.1.4</h3>
+            <div class="installer-file">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/>
+              </svg>
+              VexorLauncher-Setup-0.1.4.exe
+            </div>
+            <div class="installer-meta">
+              <span>2,71 МБ</span>
+              <span>Windows 10/11</span>
+              <span>Inno Setup</span>
+            </div>
+            <a class="button button--primary button--block" href="downloads/VexorLauncher-Setup-0.1.4.exe" download>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/>
+              </svg>
+              Скачать установщик
+            </a>
+            <p class="installer-note">Устанавливается в папку пользователя без прав администратора, создаёт ярлыки и деинсталлятор. Настройки и игровые данные при удалении сохраняются.</p>
+            <p class="installer-note">Установщик не подписан сертификатом, поэтому SmartScreen может попросить подтверждение.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="faq">
+      <div class="container">
+        <div class="section-head">
+          <span class="section-kicker">Вопросы</span>
+          <h2>Коротко о главном</h2>
+        </div>
+
+        <div class="faq">
+          <details>
+            <summary>Лаунчер бесплатный?</summary>
+            <p>Да. Ни подписок, ни рекламы, ни встроенных покупок. Скачайте установщик и пользуйтесь.</p>
+          </details>
+          <details>
+            <summary>Нужен ли аккаунт Microsoft?</summary>
+            <p>Не обязательно. Можно играть под офлайн-ником на офлайн-серверах. Для официальных серверов и скинов нужен Microsoft-аккаунт с Minecraft.</p>
+          </details>
+          <details>
+            <summary>Нужно ли устанавливать Java отдельно?</summary>
+            <p>Нет. Лаунчер сам найдёт подходящую версию Java или скачает её при первом запуске.</p>
+          </details>
+          <details>
+            <summary>Где хранятся игра и настройки?</summary>
+            <p>Игра и сборки — в <code>%APPDATA%\.vexor</code>, настройки лаунчера — в <code>%APPDATA%\VexorLauncher</code>. Удаление программы не затрагивает эти папки.</p>
+          </details>
+          <details>
+            <summary>Поддерживаются ли шейдеры?</summary>
+            <p>Да, через Iris для Fabric и OptiFine. Каталог подбирает версию шейдеров под вашу версию Minecraft.</p>
+          </details>
+          <details>
+            <summary>Почему SmartScreen предупреждает?</summary>
+            <p>Установщик не подписан платным сертификатом. Скачивайте файл только с этой страницы и проверяйте его имя перед запуском.</p>
+          </details>
+          <details>
+            <summary>Как обновляется лаунчер?</summary>
+            <p>При запуске он сам проверяет новую версию, скачивает файлы по HTTPS, сверяет SHA-256 и перезапускается. Вручную искать обновления не нужно — можно только нажать «Обновления» в настройках.</p>
+          </details>
+          <details>
+            <summary>Нужны ли права администратора?</summary>
+            <p>Нет. Лаунчер ставится в папку пользователя, поэтому обновления проходят без запроса UAC. Удалить его можно через «Параметры → Приложения».</p>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <section class="cta">
+      <div class="container">
+        <div class="cta__box">
+          <h2>Готовы играть?</h2>
+          <p>Один установщик — и все версии Minecraft, моды, сборки и серверы будут под рукой.</p>
+          <a class="button button--primary button--lg" href="downloads/VexorLauncher-Setup-0.1.4.exe" download>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/>
+            </svg>
+            <span class="button__stack">
+              <strong>Скачать Vexor Launcher</strong>
+              <small>Windows 10/11 · 2,71 МБ</small>
+            </span>
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <a class="brand" href="#top" aria-label="Vexor Launcher — наверх">
+            <span class="brand-mark" aria-hidden="true">V</span>
+            <span class="brand-text"><strong>VEXOR</strong><small>LAUNCHER</small></span>
+          </a>
+          <p>Лаунчер Minecraft для Windows. Версия 0.1.4.</p>
+        </div>
+        <nav class="footer-links" aria-label="Навигация в подвале">
+          <a href="#features">Возможности</a>
+          <a href="#interface">Интерфейс</a>
+          <a href="#requirements">Требования</a>
+          <a href="#faq">Вопросы</a>
+          <a href="downloads/VexorLauncher-Setup-0.1.4.exe" download>Скачать</a>
+        </nav>
+      </div>
+      <div class="footer-legal">
+        <span>© 2026 Vexor. Vexor Launcher не связан с Mojang Studios или Microsoft.</span>
+        <span>Minecraft — торговая марка Mojang Studios.</span>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

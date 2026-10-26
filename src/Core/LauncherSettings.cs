@@ -10,6 +10,7 @@ namespace Vexor.Core
         public string GameDir = AppPaths.DefaultGameDir;
         public int RamMb = 4096;
         public bool OptimizeJvm = true;
+        public bool VisualEnabled = true;
         public string ExtraJvmArgs = "";
         public string JavaPath = "";
         public string SelectedVersion = "";
@@ -32,6 +33,7 @@ namespace Vexor.Core
                     s.GameDir = j["gameDir"].AsString(s.GameDir);
                     s.RamMb = j["ramMb"].AsInt(s.RamMb);
                     s.OptimizeJvm = j["optimizeJvm"].AsBool(s.OptimizeJvm);
+                    s.VisualEnabled = j["visualEnabled"].AsBool(s.VisualEnabled);
                     s.ExtraJvmArgs = j["extraJvmArgs"].AsString(s.ExtraJvmArgs);
                     s.JavaPath = j["javaPath"].AsString(s.JavaPath);
                     s.SelectedVersion = j["selectedVersion"].AsString(s.SelectedVersion);
@@ -82,6 +84,7 @@ namespace Vexor.Core
                 sb.AppendLine("  \"gameDir\": " + JsonText.Quote(GameDir) + ",");
                 sb.AppendLine("  \"ramMb\": " + RamMb.ToString() + ",");
                 sb.AppendLine("  \"optimizeJvm\": " + (OptimizeJvm ? "true" : "false") + ",");
+                sb.AppendLine("  \"visualEnabled\": " + (VisualEnabled ? "true" : "false") + ",");
                 sb.AppendLine("  \"extraJvmArgs\": " + JsonText.Quote(ExtraJvmArgs) + ",");
                 sb.AppendLine("  \"javaPath\": " + JsonText.Quote(JavaPath) + ",");
                 sb.AppendLine("  \"selectedVersion\": " + JsonText.Quote(SelectedVersion) + ",");

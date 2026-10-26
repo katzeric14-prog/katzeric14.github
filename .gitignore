@@ -7,3 +7,8 @@ dist/
 # Local logs and test screenshots
 *.log
 test_*.png
+
+# Visual mod: Gradle cache, build output and dev run directory
+visual/.gradle/
+visual/build/
+visual/run/

@@ -43,7 +43,7 @@ namespace Vexor.Core
 
     public static class UpdateService
     {
-        public const string CurrentVersion = "0.1.0";
+        public const string CurrentVersion = AppInfo.Version;
 
         private const int MoveFileDelayUntilReboot = 0x4;
 

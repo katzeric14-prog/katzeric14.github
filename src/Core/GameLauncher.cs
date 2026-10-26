@@ -73,7 +73,7 @@ namespace Vexor.Core
             map["classpath_separator"] = ";";
             map["natives_directory"] = install.NativesDir;
             map["launcher_name"] = "VexorLauncher";
-            map["launcher_version"] = "0.1.0";
+            map["launcher_version"] = AppInfo.Version;
             map["resolution_width"] = settings.ResolutionWidth.ToString(CultureInfo.InvariantCulture);
             map["resolution_height"] = settings.ResolutionHeight.ToString(CultureInfo.InvariantCulture);
             map["quickPlayPath"] = "";
@@ -112,7 +112,7 @@ namespace Vexor.Core
             {
                 jvmArgs.Add("-Djava.library.path=" + install.NativesDir);
                 jvmArgs.Add("-Dminecraft.launcher.brand=VexorLauncher");
-                jvmArgs.Add("-Dminecraft.launcher.version=0.1.0");
+                jvmArgs.Add("-Dminecraft.launcher.version=" + AppInfo.Version);
                 jvmArgs.Add("-cp");
                 jvmArgs.Add(string.Join(";", install.Classpath.ToArray()));
             }
