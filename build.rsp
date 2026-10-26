@@ -21,6 +21,7 @@
 src\Core\AppPaths.cs
 src\Core\CatalogZip.cs
 src\Core\CurseForge.cs
+src\Core\Diagnostics.cs
 src\Core\GameInstaller.cs
 src\Core\GameLauncher.cs
 src\Core\ImageCache.cs

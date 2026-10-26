@@ -24,19 +24,39 @@ namespace Vexor.Core
 
         public static int TotalRamMb
         {
-            get
+            get { return ReadStatus().TotalPhys; }
+        }
+
+        public static int AvailableRamMb
+        {
+            get { return ReadStatus().AvailPhys; }
+        }
+
+        private static MemorySnapshot ReadStatus()
+        {
+            var snapshot = new MemorySnapshot();
+            snapshot.TotalPhys = 8192;
+            snapshot.AvailPhys = 4096;
+            try
             {
-                try
+                var status = new MemoryStatus();
+                status.Length = (uint)Marshal.SizeOf(typeof(MemoryStatus));
+                if (GlobalMemoryStatusEx(status))
                 {
-                    var status = new MemoryStatus();
-                    status.Length = (uint)Marshal.SizeOf(typeof(MemoryStatus));
-                    if (GlobalMemoryStatusEx(status)) return (int)(status.TotalPhys / (1024UL * 1024UL));
+                    snapshot.TotalPhys = (int)(status.TotalPhys / (1024UL * 1024UL));
+                    snapshot.AvailPhys = (int)(status.AvailPhys / (1024UL * 1024UL));
                 }
-                catch
-                {
-                }
-                return 8192;
             }
+            catch
+            {
+            }
+            return snapshot;
+        }
+
+        private sealed class MemorySnapshot
+        {
+            public int TotalPhys;
+            public int AvailPhys;
         }
     }
 }

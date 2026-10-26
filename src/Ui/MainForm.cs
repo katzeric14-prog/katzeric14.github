@@ -39,6 +39,7 @@ namespace Vexor.Ui
         private PagePanel _resourcesPage;
         private PagePanel _skinsPage;
         private PagePanel _serversPage;
+        private PagePanel _diagnosticsPage;
         private PagePanel _settingsPage;
         private NavButton _navPlay;
         private NavButton _navMods;
@@ -47,6 +48,7 @@ namespace Vexor.Ui
         private NavButton _navShaders;
         private NavButton _navServers;
         private NavButton _navSkins;
+        private NavButton _navDiagnostics;
         private NavButton _navSettings;
 
         private VersionManifest _manifest;
@@ -201,6 +203,29 @@ namespace Vexor.Ui
         private int _serverGeneration;
         private DateTime _serverPingedUtc = DateTime.MinValue;
 
+        private RoundedButton _diagRefresh;
+        private RoundedButton _diagFolder;
+        private Label _diagTarget;
+        private Label _diagSubtitle;
+        private Label _diagRam;
+        private Label _diagRamHint;
+        private Label _diagVerdict;
+        private Label _diagCounts;
+        private Label _diagStamp;
+        private Label _diagHeader;
+        private Label _diagEmpty;
+        private Label _diagStatus;
+        private Panel _diagViewport;
+        private Panel _diagContent;
+        private Panel _diagMeterTrack;
+        private Panel _diagMeterFill;
+        private Panel _diagMeterMark;
+        private DarkScrollBar _diagScroll;
+        private ServerWheelFilter _diagWheelFilter;
+        private List<Control> _diagRows = new List<Control>();
+        private bool _diagBusy;
+        private int _diagGeneration;
+
         private CancellationTokenSource _cts;
         private bool _busy;
         private bool _gameRunning;
@@ -321,6 +346,11 @@ namespace Vexor.Ui
                     Application.RemoveMessageFilter(_serverWheelFilter);
                     _serverWheelFilter = null;
                 }
+                if (_diagWheelFilter != null)
+                {
+                    Application.RemoveMessageFilter(_diagWheelFilter);
+                    _diagWheelFilter = null;
+                }
                 if (_uiReady) SaveSettingsFromUi(false);
                 if (_logFile != null)
                 {
@@ -439,13 +469,14 @@ namespace Vexor.Ui
             Controls.Add(_sidebar);
 
             _navPlay = AddNav(134, "Играть", "\uE768");
-            _navMods = AddNav(188, "Моды", "\uE7FC");
-            _navPacks = AddNav(242, "Модпаки", "\uE7B8");
-            _navResources = AddNav(296, "Ресурспаки", "\uE8B7");
-            _navShaders = AddNav(350, "Шейдеры", "\uE790");
-            _navServers = AddNav(404, "Серверы", "\uE774");
-            _navSkins = AddNav(458, "Скины", "\uE77B");
-            _navSettings = AddNav(512, "Настройки", "\uE713");
+            _navMods = AddNav(184, "Моды", "\uE7FC");
+            _navPacks = AddNav(234, "Модпаки", "\uE7B8");
+            _navResources = AddNav(284, "Ресурспаки", "\uE8B7");
+            _navShaders = AddNav(334, "Шейдеры", "\uE790");
+            _navServers = AddNav(384, "Серверы", "\uE774");
+            _navSkins = AddNav(434, "Скины", "\uE77B");
+            _navDiagnostics = AddNav(484, "Диагностика", "\uE9D9");
+            _navSettings = AddNav(534, "Настройки", "\uE713");
 
             _navPlay.Click += delegate { ShowPage(0); };
             _navMods.Click += delegate { ShowPage(1); };
@@ -454,7 +485,8 @@ namespace Vexor.Ui
             _navShaders.Click += delegate { SetCatalogMode(true); };
             _navServers.Click += delegate { ShowPage(5); };
             _navSkins.Click += delegate { ShowPage(4); };
-            _navSettings.Click += delegate { ShowPage(6); };
+            _navDiagnostics.Click += delegate { ShowPage(6); };
+            _navSettings.Click += delegate { ShowPage(7); };
         }
 
         private NavButton AddNav(int y, string text, string glyph)
@@ -512,7 +544,7 @@ namespace Vexor.Ui
 
         private void ShowPage(int index)
         {
-            if (_uiReady && index != 6 && _settingsPage.Visible) SaveSettingsFromUi(false);
+            if (_uiReady && index != 7 && _settingsPage.Visible) SaveSettingsFromUi(false);
 
             if (index != 1) HideCategoryMenu();
             _playPage.Visible = index == 0;
@@ -521,7 +553,8 @@ namespace Vexor.Ui
             _resourcesPage.Visible = index == 3;
             _skinsPage.Visible = index == 4;
             _serversPage.Visible = index == 5;
-            _settingsPage.Visible = index == 6;
+            _diagnosticsPage.Visible = index == 6;
+            _settingsPage.Visible = index == 7;
             _navPlay.Selected = index == 0;
             _navMods.Selected = index == 1;
             _navPacks.Selected = index == 2;
@@ -529,9 +562,11 @@ namespace Vexor.Ui
             _navShaders.Selected = index == 3 && _shaderMode;
             _navSkins.Selected = index == 4;
             _navServers.Selected = index == 5;
-            _navSettings.Selected = index == 6;
+            _navDiagnostics.Selected = index == 6;
+            _navSettings.Selected = index == 7;
 
-            if (_uiReady && index == 6) RefreshJavaStatusAsync(false);
+            if (_uiReady && index == 7) RefreshJavaStatusAsync(false);
+            if (_uiReady && index == 6) RefreshDiagnosticsAsync(false);
             if (_uiReady && index == 1)
             {
                 UpdateModsTarget();
@@ -635,6 +670,9 @@ namespace Vexor.Ui
 
             _serversPage = NewPage();
             BuildServersPage();
+
+            _diagnosticsPage = NewPage();
+            BuildDiagnosticsPage();
 
             _settingsPage = NewPage();
             BuildSettingsPage();
@@ -1088,7 +1126,7 @@ namespace Vexor.Ui
             {
                 if (message.Msg != 0x020A) return false;
                 if (_page == null || _page.IsDisposed || !_page.Visible) return false;
-                if (_bar == null || _bar.IsDisposed || !_bar.Visible) return false;
+                if (_bar == null || _bar.IsDisposed || !_bar.Visible || _bar.Maximum <= 0) return false;
                 Point cursor = Cursor.Position;
                 if (!_viewport.RectangleToScreen(_viewport.ClientRectangle).Contains(cursor)) return false;
                 int delta = (short)((long)message.WParam >> 16);
@@ -1096,6 +1134,364 @@ namespace Vexor.Ui
                 _bar.ScrollBy(-Math.Sign(delta) * _bar.SmallChange);
                 return true;
             }
+        }
+
+        private void BuildDiagnosticsPage()
+        {
+            AddLabel(_diagnosticsPage, "Диагностика", 28, 8, 420, 40, Theme.Display(26f, FontStyle.Bold), Theme.Text);
+            AddLabel(_diagnosticsPage, "Совместимость установленных модов и запас оперативной памяти", 28, 48, 700, 20,
+                Theme.F(11.5f), Theme.Muted);
+
+            _diagRefresh = AddButton(_diagnosticsPage, "", "\uE72C", 816, 21, 40, 30,
+                RoundedButton.ButtonStyle.Ghost, 11f, delegate { RefreshDiagnosticsAsync(true); });
+            _diagFolder = AddButton(_diagnosticsPage, "Папка mods", "", 688, 21, 118, 30,
+                RoundedButton.ButtonStyle.Ghost, 9.5f, delegate { OpenDiagnosticFolder(); });
+
+            var refreshTip = new ToolTip();
+            refreshTip.SetToolTip(_diagRefresh, "Проверить моды и память");
+            refreshTip.SetToolTip(_diagFolder, "Открыть папку mods выбранной сборки");
+
+            var summary = AddCard(_diagnosticsPage, 28, 76, 828, 156);
+            summary.FillTop = Theme.Surface;
+            summary.FillBottom = Theme.Surface;
+            AddLabel(summary, "СБОРКА", 18, 10, 300, 16, Theme.F(9.5f, FontStyle.Bold), Theme.Muted2);
+            _diagTarget = AddLabel(summary, "Определяю сборку…", 18, 28, 520, 24,
+                Theme.F(13f, FontStyle.Bold), Theme.Text);
+            _diagTarget.AutoEllipsis = true;
+            _diagSubtitle = AddLabel(summary, "", 18, 52, 520, 18, Theme.F(9.5f), Theme.Muted2);
+            _diagSubtitle.AutoEllipsis = true;
+
+            AddLabel(summary, "ОПЕРАТИВНАЯ ПАМЯТЬ", 18, 80, 300, 16, Theme.F(9.5f, FontStyle.Bold), Theme.Muted2);
+            _diagRam = AddLabel(summary, "—", 18, 98, 400, 22, Theme.F(12.5f, FontStyle.Bold), Theme.Text);
+
+            _diagMeterTrack = new Panel();
+            _diagMeterTrack.Bounds = new Rectangle(Theme.S(18), Theme.S(126), Theme.S(400), Theme.S(8));
+            _diagMeterTrack.BackColor = Theme.SurfaceAlt;
+            summary.Controls.Add(_diagMeterTrack);
+
+            _diagMeterFill = new Panel();
+            _diagMeterFill.Bounds = new Rectangle(0, 0, 0, Theme.S(8));
+            _diagMeterFill.BackColor = Theme.Green;
+            _diagMeterTrack.Controls.Add(_diagMeterFill);
+
+            _diagMeterMark = new Panel();
+            _diagMeterMark.Bounds = new Rectangle(0, 0, Math.Max(1, Theme.S(2)), Theme.S(8));
+            _diagMeterMark.BackColor = Theme.AccentLight;
+            _diagMeterMark.Visible = false;
+            _diagMeterTrack.Controls.Add(_diagMeterMark);
+
+            _diagRamHint = AddLabel(summary, "", 18, 138, 520, 16, Theme.F(9f), Theme.Muted2);
+            _diagRamHint.AutoEllipsis = true;
+
+            _diagVerdict = AddLabel(summary, "Проверка…", 548, 12, 262, 30,
+                Theme.Display(15f, FontStyle.Bold), Theme.Muted);
+            _diagVerdict.TextAlign = ContentAlignment.MiddleRight;
+            _diagCounts = AddLabel(summary, "", 548, 44, 262, 46, Theme.F(9.5f), Theme.Muted2);
+            _diagCounts.TextAlign = ContentAlignment.TopRight;
+            _diagStamp = AddLabel(summary, "", 548, 120, 262, 16, Theme.F(8.5f), Theme.Muted2);
+            _diagStamp.TextAlign = ContentAlignment.MiddleRight;
+
+            var card = AddCard(_diagnosticsPage, 28, 244, 828, 402);
+            card.FillTop = Theme.Surface;
+            card.FillBottom = Theme.Surface;
+            AddLabel(card, "РЕЗУЛЬТАТЫ ПРОВЕРКИ", 18, 12, 300, 20, Theme.F(9.5f, FontStyle.Bold), Theme.Muted2);
+            _diagHeader = AddLabel(card, "", 330, 12, 482, 20, Theme.F(9.5f), Theme.Muted2);
+            _diagHeader.TextAlign = ContentAlignment.MiddleRight;
+
+            _diagViewport = new Panel();
+            _diagViewport.Bounds = new Rectangle(Theme.S(14), Theme.S(40), Theme.S(790), Theme.S(318));
+            _diagViewport.BackColor = Theme.Surface;
+            card.Controls.Add(_diagViewport);
+
+            _diagContent = new Panel();
+            _diagContent.Bounds = new Rectangle(0, 0, Theme.S(790), Theme.S(318));
+            _diagContent.BackColor = Theme.Surface;
+            _diagViewport.Controls.Add(_diagContent);
+
+            _diagEmpty = AddLabel(card, "Проблем не найдено — моды совместимы, памяти достаточно.",
+                20, 150, 788, 30, Theme.F(11.5f), Theme.Green);
+            _diagEmpty.TextAlign = ContentAlignment.MiddleCenter;
+            _diagEmpty.Visible = false;
+
+            _diagScroll = new DarkScrollBar();
+            _diagScroll.Bounds = new Rectangle(Theme.S(808), Theme.S(40), Theme.S(6), Theme.S(318));
+            _diagScroll.Minimum = 0;
+            _diagScroll.Maximum = 0;
+            _diagScroll.LargeChange = _diagViewport.Height;
+            _diagScroll.SmallChange = Theme.S(184);
+            _diagScroll.ValueChanged += delegate { _diagContent.Top = -_diagScroll.Value; };
+            _diagScroll.Visible = false;
+            card.Controls.Add(_diagScroll);
+
+            _diagWheelFilter = new ServerWheelFilter(_diagnosticsPage, _diagViewport, _diagScroll);
+            Application.AddMessageFilter(_diagWheelFilter);
+
+            _diagStatus = AddLabel(_diagnosticsPage, "Проверка выполняется автоматически при открытии страницы.",
+                28, 650, 828, 18, Theme.F(9.5f), Theme.Muted2);
+        }
+
+        private sealed class DiagnosticTarget
+        {
+            public string ModsDir = "";
+            public string Loader = "";
+            public string LoaderVersion = "";
+            public string GameVersion = "";
+            public string Title = "";
+            public string Subtitle = "";
+            public bool IsModpack;
+        }
+
+        private DiagnosticTarget ResolveDiagnosticTarget()
+        {
+            var target = new DiagnosticTarget();
+            VersionEntry entry = _versionList != null ? _versionList.SelectedEntry : null;
+            InstalledBuild build = entry != null ? LoaderInstaller.Find(_builds, entry.Id) : null;
+            if (entry == null && build == null && _builds.Count > 0) build = _builds[0];
+
+            if (build != null)
+            {
+                target.ModsDir = build.ModsDir;
+                target.Loader = build.Loader ?? "";
+                target.LoaderVersion = build.LoaderVersion ?? "";
+                target.GameVersion = build.GameVersion ?? "";
+                target.IsModpack = build.IsModpack;
+                target.Title = build.Summary;
+                target.Subtitle = "mods: " + build.ModsDir;
+                return target;
+            }
+
+            target.ModsDir = Path.Combine(_settings.GameDir, "mods");
+            target.GameVersion = entry != null ? entry.Id : (_settings.SelectedVersion ?? "");
+            target.Title = entry != null ? "Ваниль · " + entry.Id : "Сборка не выбрана";
+            target.Subtitle = entry != null
+                ? "Выберите сборку с Fabric или Forge, чтобы проверить именно её моды"
+                : "mods: " + target.ModsDir;
+            return target;
+        }
+
+        private void OpenDiagnosticFolder()
+        {
+            DiagnosticTarget target = ResolveDiagnosticTarget();
+            OpenFolder(target.ModsDir);
+        }
+
+        private async void RefreshDiagnosticsAsync(bool manual)
+        {
+            if (_diagBusy || _diagnosticsPage == null) return;
+
+            _diagBusy = true;
+            int generation = ++_diagGeneration;
+            if (_diagRefresh != null) _diagRefresh.Enabled = false;
+            SetDiagStatus("Читаю манифесты модов и оцениваю память…", Theme.Muted);
+            if (_diagVerdict != null)
+            {
+                _diagVerdict.Text = "Проверка…";
+                _diagVerdict.ForeColor = Theme.Muted;
+            }
+
+            DiagnosticTarget target = ResolveDiagnosticTarget();
+            if (_diagTarget != null)
+            {
+                _diagTarget.Text = target.Title;
+                _diagSubtitle.Text = target.Subtitle;
+            }
+            if (manual) Log("Диагностика: проверяю " + target.ModsDir);
+
+            int configured = _settings.RamMb;
+            string extra = _settings.ExtraJvmArgs;
+            int total = SystemInfo.TotalRamMb;
+            int available = SystemInfo.AvailableRamMb;
+
+            try
+            {
+                DiagnosticReport report = await Task.Run(() => ModDiagnostics.Analyze(target.ModsDir,
+                    target.Loader, target.LoaderVersion, target.GameVersion, configured, extra, total,
+                    available, target.IsModpack, target.Title, target.Subtitle));
+                if (IsDisposed || generation != _diagGeneration) return;
+                RenderDiagnosticReport(report);
+                if (manual)
+                    Log("Диагностика: ошибок " + report.ErrorCount + ", предупреждений " + report.WarningCount + ".");
+            }
+            catch (Exception ex)
+            {
+                if (generation == _diagGeneration)
+                    SetDiagStatus("Ошибка проверки: " + ShortMessage(ex), Theme.Red);
+            }
+            finally
+            {
+                if (generation == _diagGeneration)
+                {
+                    _diagBusy = false;
+                    if (_diagRefresh != null) _diagRefresh.Enabled = true;
+                }
+            }
+        }
+
+        private void RenderDiagnosticReport(DiagnosticReport report)
+        {
+            ClearDiagnosticRows();
+            int count = report.Issues.Count;
+            for (int i = 0; i < count; i++) AddDiagnosticRow(report.Issues[i], i);
+
+            _diagEmpty.Visible = count == 0;
+            if (count == 0) _diagEmpty.BringToFront();
+
+            int contentHeight = Math.Max(_diagViewport.Height,
+                count * Theme.S(92) - (count > 0 ? Theme.S(8) : 0));
+            _diagContent.Bounds = new Rectangle(0, 0, Theme.S(790), contentHeight);
+            _diagScroll.Maximum = Math.Max(0, contentHeight - _diagViewport.Height);
+            _diagScroll.LargeChange = _diagViewport.Height;
+            _diagScroll.SmallChange = Theme.S(184);
+            _diagScroll.Value = 0;
+            _diagScroll.Visible = _diagScroll.Maximum > 0;
+            _diagContent.Top = 0;
+
+            _diagTarget.Text = report.TargetTitle;
+            _diagSubtitle.Text = report.TargetSubtitle;
+            _diagRam.Text = Theme.FormatRam(report.EffectiveRamMb) + " из " + Theme.FormatRam(report.TotalRamMb);
+            _diagRam.ForeColor = MemoryColor(report.MemoryLevel);
+
+            string hint = "Рекомендуется " + Theme.FormatRam(report.RecommendedRamMb) + " · " +
+                report.ModCount + " " + Plural(report.ModCount, "мод", "мода", "модов");
+            if (report.DisabledCount > 0) hint += " (+" + report.DisabledCount + " отключено)";
+            hint += " · свободно " + Theme.FormatRam(report.AvailableRamMb);
+            if (report.RamOverridden) hint += " · -Xmx из аргументов JVM";
+            _diagRamHint.Text = hint;
+
+            int trackWidth = Math.Max(1, _diagMeterTrack.Width);
+            int fillWidth = report.TotalRamMb > 0
+                ? (int)Math.Round(trackWidth * Math.Min(1.0, report.EffectiveRamMb / (double)report.TotalRamMb))
+                : 0;
+            _diagMeterFill.Width = Math.Max(0, Math.Min(trackWidth, fillWidth));
+            _diagMeterFill.BackColor = MemoryColor(report.MemoryLevel);
+            bool showMark = report.TotalRamMb > 0 && report.RecommendedRamMb < report.TotalRamMb;
+            _diagMeterMark.Visible = showMark;
+            if (showMark)
+            {
+                int markLeft = (int)Math.Round(trackWidth * (report.RecommendedRamMb / (double)report.TotalRamMb));
+                _diagMeterMark.Left = Math.Max(0, Math.Min(trackWidth - _diagMeterMark.Width, markLeft));
+            }
+
+            if (report.ErrorCount > 0)
+            {
+                _diagVerdict.Text = "Есть проблемы";
+                _diagVerdict.ForeColor = Theme.Red;
+            }
+            else if (report.WarningCount > 0)
+            {
+                _diagVerdict.Text = "Есть предупреждения";
+                _diagVerdict.ForeColor = Theme.Yellow;
+            }
+            else
+            {
+                _diagVerdict.Text = "Можно играть";
+                _diagVerdict.ForeColor = Theme.Green;
+            }
+
+            if (report.ErrorCount == 0 && report.WarningCount == 0)
+            {
+                _diagCounts.Text = "Совместимость и память в норме";
+            }
+            else
+            {
+                var parts = new List<string>();
+                if (report.ErrorCount > 0)
+                    parts.Add(report.ErrorCount + " " + Plural(report.ErrorCount, "ошибка", "ошибки", "ошибок"));
+                if (report.WarningCount > 0)
+                    parts.Add(report.WarningCount + " " +
+                        Plural(report.WarningCount, "предупреждение", "предупреждения", "предупреждений"));
+                if (report.InfoCount > 0 && parts.Count == 0)
+                    parts.Add(report.InfoCount + " " + Plural(report.InfoCount, "заметка", "заметки", "заметок"));
+                _diagCounts.Text = string.Join("\n", parts.ToArray());
+            }
+
+            _diagStamp.Text = "Проверено в " + report.ScannedAt.ToString("HH:mm:ss");
+            _diagHeader.Text = count == 0 ? "Проблем не найдено" :
+                count + " " + Plural(count, "замечание", "замечания", "замечаний");
+
+            Color statusColor = report.ErrorCount > 0 ? Theme.Red
+                : (report.WarningCount > 0 ? Theme.Yellow : Theme.Green);
+            string status = report.ModCount + " " + Plural(report.ModCount, "мод", "мода", "модов") +
+                " проверено · " + report.ErrorCount + " " +
+                Plural(report.ErrorCount, "ошибка", "ошибки", "ошибок") + " · " +
+                report.WarningCount + " " +
+                Plural(report.WarningCount, "предупреждение", "предупреждения", "предупреждений");
+            if (!report.ModsDirExists) status += " · папка mods ещё не создана";
+            else if (report.DisabledCount > 0) status += " · " + report.DisabledCount + " отключено";
+            SetDiagStatus(status, statusColor);
+        }
+
+        private void AddDiagnosticRow(ModIssue issue, int index)
+        {
+            CardPanel row = AddCard(_diagContent, 0, index * 92, 790, 84);
+            row.Radius = 14;
+            row.Shadow = false;
+            row.Stroke = Theme.BorderSoft;
+            row.FillTop = Theme.SurfaceAlt;
+            row.FillBottom = Theme.SurfaceAlt;
+
+            Color tint;
+            string glyph;
+            if (issue.Level == DiagnosticLevel.Error)
+            {
+                tint = Theme.Red;
+                glyph = "\uEA39";
+            }
+            else if (issue.Level == DiagnosticLevel.Warning)
+            {
+                tint = Theme.Yellow;
+                glyph = "\uE7BA";
+            }
+            else
+            {
+                tint = Theme.AccentLight;
+                glyph = "\uE946";
+            }
+
+            AddTile(row, 16, 18, 48, glyph, tint, 20f);
+            Label title = AddLabel(row, issue.Title, 78, 8, 690, 22, Theme.F(12.5f, FontStyle.Bold), Theme.Text);
+            title.AutoEllipsis = true;
+            Label detail = AddLabel(row, issue.Detail, 78, 30, 690, 36, Theme.F(9.5f), Theme.Muted);
+            detail.AutoEllipsis = true;
+            Label file = AddLabel(row, issue.File, 78, 68, 690, 14, Theme.F(8.5f), Theme.Muted2);
+            file.AutoEllipsis = true;
+            _diagRows.Add(row);
+        }
+
+        private void ClearDiagnosticRows()
+        {
+            for (int i = 0; i < _diagRows.Count; i++)
+            {
+                try { _diagRows[i].Dispose(); }
+                catch
+                {
+                }
+            }
+            _diagRows.Clear();
+        }
+
+        private void SetDiagStatus(string text, Color color)
+        {
+            if (_diagStatus == null || IsDisposed) return;
+            _diagStatus.Text = text;
+            _diagStatus.ForeColor = color;
+        }
+
+        private static Color MemoryColor(DiagnosticLevel level)
+        {
+            if (level == DiagnosticLevel.Error) return Theme.Red;
+            if (level == DiagnosticLevel.Warning) return Theme.Yellow;
+            return Theme.Green;
+        }
+
+        private static string Plural(int count, string one, string few, string many)
+        {
+            int mod100 = count % 100;
+            int mod10 = count % 10;
+            if (mod100 >= 11 && mod100 <= 14) return many;
+            if (mod10 == 1) return one;
+            if (mod10 >= 2 && mod10 <= 4) return few;
+            return many;
         }
 
         private void BuildSettingsPage()
